@@ -1,0 +1,148 @@
+dp:
+construct the array: 
+int mod = 1e9+7;
+
+long countArray(int n, int k, int x) {
+      long a[n],b[n];
+      a[0]= x==1?1:0;   
+      b[0]= x==1?0:1;
+   
+      for(int i=1;i<n;i++){                                  
+        a[i]= b[i-1]%mod;
+        b[i]= (a[i-1]*(k-1) + b[i-1]*(k-2) )%mod;    
+    }
+    return a[n-1];
+
+}
+
+Equal:
+int equal(vector<int> arr) {
+     int mn = INT_MAX;
+    for (int i = 0; i < arr.size(); i++) mn = min(mn, arr[i]);
+    int k, ope, ans = INT_MAX;
+    for (int j = 0; j < 5; j++){
+        ope = 0;
+        for (int i = 0; i < arr.size(); i++){
+            k = arr[i] - mn;
+            ope += (k / 5) + (k % 5) / 2 + (k % 5) % 2;
+        }
+        ans = min(ans, ope);
+        mn--;
+    }
+    return ans;
+}
+
+Experiment 1.1
+
+Hourglass Sum: 
+
+int hourglassSum(vector<vector<int>> arr) {
+    vector<vector<int>> hg(6, vector<int>(6, 0));
+    
+    for(int i=0; i<6; i++){
+        for(int j=0; j<6; j++){
+            if(j+2 >= 6 || i+2 >= 6) hg[i][j] = INT_MIN;
+        }
+    }
+    
+    for(int i=0; i<6; i++){
+        for(int j=0; j<6; j++){
+            if(j+2 >= 6 || i+2 >= 6) break;;
+            for(int k=j; k<j+3; k++){
+                if(k<6){
+                    hg[i][j] = hg[i][j] + arr[i][k];
+                    if(i+2 < 6){
+                        hg[i][j] += arr[i+2][k];
+                    }
+                }
+            }
+            if(i+1 < 6 && j+1 < 6){
+                hg[i][j] += arr[i+1][j+1];
+            }
+        }
+    }
+    
+    int maxi = INT_MIN;
+    for(int i=0; i<6; i++){
+        for(int j=0; j<6; j++){
+            // cout<<hg[i][j]<<" ";
+            maxi = max(maxi, hg[i][j]);
+        }
+        cout<<endl;
+    }
+    
+    return maxi;
+
+}
+
+
+Exp 1.2:
+
+Equal Stack:
+
+int equalStacks(vector<int> h1, vector<int> h2, vector<int> h3) {
+    int s1 = 0, s2 = 0, s3 = 0;
+    for(auto it:h1) s1 += it;   for(auto it:h2) s2 += it;   for(auto it:h3) s3 += it;
+    priority_queue<pair<int, pair<int, int>>> pq;
+    pq.push({s1, {1, 0}}); pq.push({s2, {2, 0}});  pq.push({s3, {3, 0}});
+    
+    while(s1!=s2 || s2 != s3 ){
+        pair<int, pair<int, int>> p = pq.top();
+        pq.pop();
+        int st = p.second.first;
+        int ind = p.second.second;
+        if(st == 1){
+            s1 -= h1[ind];
+            pq.push({s1, {1, ind+1}});
+        }
+        else if(st == 2){
+            s2 -= h2[ind];
+            pq.push({s2, {2, ind+1}});
+        }
+        else{
+            s3 -= h3[ind];
+            pq.push({s3, {3, ind+1}});
+        }
+    }
+    
+    return s1;
+}
+
+Game of Two stack:
+
+int twoStacks(int maxSum, vector<int> a, vector<int> b) {
+   int m = a.size(), n = b.size();
+   int ind1 = 0;
+   int ans = 0;
+   while(ind1 != m && a[ind1]<=maxSum){
+       maxSum -= a[ind1];
+       ind1++;
+   }
+   ans = max(ans, ind1);
+   ind1--;
+   
+   int ind2 = 0;
+   while(ind2 != n && b[ind2] <= maxSum){
+       maxSum -= b[ind2];
+       ind2++;
+       ans++;
+   }
+   int temp = ans;
+   while(ind1 >= 0){
+       maxSum += a[ind1];
+       ind1--;
+       temp--;
+       while(ind2!=n && b[ind2] <= maxSum){
+           maxSum -= b[ind2];
+           ind2++;
+           temp++;
+       }
+       ans = max(temp, ans);
+   }
+   
+   return ans;
+}
+
+
+
+
