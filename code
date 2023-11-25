@@ -143,6 +143,334 @@ int twoStacks(int maxSum, vector<int> a, vector<int> b) {
    return ans;
 }
 
+Down to zero ii 
+int downToZero(int n) {
+     if(n<=3)
+        return n;
+    queue< pair<int, int> > q;
+    q.push({n, 0});
+    int d;
+    while(!q.empty()){
+        n = q.front().first;
+        d = q.front().second;
+        q.pop();
+        if(n == 2){
+            return d+2;
+        }
+        q.push({n-1, d+1});
+        int i = 2;
+        while(i*i<=n){
+            if(n%i == 0){
+                q.push({max(i, n/i), d+1});
+            }
+            i++;
+        }
+        
+    }
+    return -1;
+}
+
+
+Truck Tour : 
+
+int truckTour(vector<vector<int>> petrolpumps) {
+   int n = petrolpumps.size();
+    for (int i = 0; i < n; i++)
+    {
+        int petrol = 0;
+        int index = i;
+        if (petrolpumps[i][0] < petrolpumps[i][1])
+            continue;
+        while (true)
+        {
+            petrol += petrolpumps[index][0];
+            petrol -= petrolpumps[index][1];
+            if(petrol < 0)
+                break;
+            index = (index + 1)%n;
+            if(index == i)
+                break;
+        }
+        if (index == i)
+            return i;
+    }
+    return -1;
+    
+}
+
+Experimient 1.4 
+
+Fraudelent activity notification
+
+int activityNotifications(vector<int> expenditure, int d) {
+    vector<int> temp;
+    for(int i=0; i<d; i++){
+        temp.push_back(expenditure[i]);
+    }
+    sort(temp.begin(), temp.end());
+    int count = 0;
+    for(int i=d; i<expenditure.size(); i++){
+         float median;
+        if(d%2 == 0){
+            median = (float)(temp[(d/2)-1]+temp[d/2])/2;
+        }
+        else {
+            median = temp[d/2];
+        }
+        // cout<<median<<" ";
+        if(expenditure[i] >= 2*median){
+            count++;
+        }
+        
+        auto it1 = lower_bound(temp.begin(), temp.end(), expenditure[i-d]);
+        temp.erase(it1);
+        
+        auto it2= lower_bound(temp.begin(), temp.end(), expenditure[i]);
+        temp.insert(it2, expenditure[i]);       
+    }
+    
+    return count;
+}
+
+Missing number :
+
+vector<int> missingNumbers(vector<int> arr, vector<int> brr) {
+    unordered_map<int, int> m;
+    for(int i=0; i<arr.size(); i++){
+        m[arr[i]]++;
+    }
+    
+    unordered_set<int> s;
+    for(int i=0; i<brr.size(); i++){
+        if(m[brr[i]] == 0){
+            s.insert(brr[i]);
+            cout<<brr[i]<<" ";
+        }
+        else{
+            m[brr[i]]--;
+        }
+    }
+    
+    vector<int> ans;
+    for(auto it:s){
+        ans.push_back(it);
+    }
+    sort(ans.begin(), ans.end());
+    
+    return ans;
+}
+
+Experiment 2.1
+
+BFS : Shortest Reach
+
+vector<int> bfs(int n, int m, vector<vector<int>> edges, int s) {
+    vector<int> adj[n+1];
+    for(int i=0; i<m; i++){
+        adj[edges[i][0]].push_back(edges[i][1]);
+        adj[edges[i][1]].push_back(edges[i][0]);
+    }
+    vector<bool> visited(n+1, false);
+    queue<pair<int, int>> q;
+    q.push({s, 0});
+    visited[s] = true;
+    unordered_map<int, int> mp;
+    while(!q.empty()){
+        int curr = q.front().first;
+        int dist = q.front().second;
+        q.pop();
+        
+        for(auto it:adj[curr]){
+            if(!visited[it]){
+             int nd =  dist + 6;
+             visited[it] = true;
+             q.push({it, nd});
+             mp[it] = nd;
+            }
+        }
+    }
+    
+    vector<int> ans;
+    for(int i=1; i<=n; i++){
+        if(i==s){
+            continue;
+        }
+        if(mp[i] > 0){
+            ans.push_back(mp[i]);
+        }
+        else{
+            ans.push_back(-1);
+        }
+    }
+    
+    return ans;
+}
+
+Even Tree: 
+
+int ans = 0;
+
+int dfs(int src, vector<bool>& vis, vector<int> adj[]){
+    int count = 0;
+    vis[src] = true;
+    for(auto it:adj[src]){
+        if(!vis[it])  {
+          int cnt = dfs(it, vis, adj);
+          if(cnt%2 == 0){
+              ans++;
+          } 
+          count += cnt; 
+        } 
+    }
+    return count+1;
+}
+
+// Complete the evenForest function below.
+int evenForest(int t_nodes, int t_edges, vector<int> t_from, vector<int> t_to) {
+    vector<int> adj[t_nodes+1];
+    for(int i=0; i<t_edges; i++){
+        adj[t_from[i]].push_back(t_to[i]);
+        adj[t_to[i]].push_back(t_from[i]);
+    }
+    // int ans = 0;
+    vector<bool> vis(t_nodes+1, false);
+    vis[1] = true;
+    for(auto it:adj[1]){
+      if(!vis[it]){
+          int cnt = dfs(it, vis, adj);
+        // cout<<cnt<<" ";
+        if(cnt%2 == 0){
+            ans++;
+        }
+      }
+        
+    }
+    return ans;
+}
+
+
+Top View:
+
+    void topView(Node * root) {
+         
+        queue<pair<Node*, int>> q;
+        q.push({root, 0});
+        map<int, int> m;
+        
+        while(!q.empty()){
+            int levelSize = q.size();
+            while(levelSize--){
+                Node* curr = q.front().first;
+                int pos = q.front().second;
+                q.pop();
+                if(m[pos] == 0){
+                    m[pos] = curr->data;
+                }
+                if(curr->left != NULL){
+                    q.push({curr->left, pos-1});
+                }
+                if(curr->right != NULL){
+                    q.push({curr->right, pos+1});
+                }
+            }
+        }
+        
+        
+        for(auto it:m){
+            cout<<it.second<<" ";
+        }
+        
+        return;
+    }
+
+BST insertion: 
+
+ Node * insert(Node * root, int data) {
+        if(root == NULL){
+            Node* curr = new Node(data);
+            curr->data = data;
+            return curr;
+        }
+        
+        Node* curr = root;
+        Node* prev = NULL;
+        while(curr != NULL){
+            prev = curr;
+            if(data >= curr->data){
+                curr = curr->right;
+            }
+            else{
+                curr = curr->left;
+            }
+        }
+        if(prev->left == NULL && data <= prev->data){
+            Node* curr = new Node(data);
+            curr->data = data;
+            prev->left = curr;
+        }
+        else if(prev->right == NULL){
+            Node* curr = new Node(data);
+            curr->data = data;
+            prev->right = curr;
+        }
+        
+        return root;
+    }
+
+
+Exp 2.3 : 
+
+string pangrams(string s) {
+    unordered_map<char, int> m;
+    int ans = 0;
+    for(int i=0; i<s.size(); i++){
+        if(s[i] >= 'a' && s[i] <= 'z'){
+            char ch = toupper(s[i]);
+            cout<<ch<<" ";
+            if(m[ch] > 0 || m[ch] > 0){
+                continue;
+            }
+            else{
+                m[ch]++;
+                ans++;
+            }
+        }
+        else if(s[i] >= 'A' && s[i] <= 'Z'){
+            // char ch = tolower(s[i]);
+            char ch = s[i];
+            if(m[s[i]] > 0 || m[ch] > 0){
+                continue;
+            }
+            else{
+                m[s[i]]++;
+                ans++;
+            }
+        }
+    }
+    
+    cout<<ans<<endl;
+    return ans == 26 ? "pangram" : "not pangram";
+}
+
+Camel Case:
+
+int camelcase(string s) {
+    int n = s.size();
+    int count = 1;
+    for(int i=0; i<n; i++){
+        if(s[i] >= 'A' && s[i] <= 'Z'){
+            count++;
+        }
+    }
+    
+    return count;
+}
+
+
+
+
+
+
 
 
 
